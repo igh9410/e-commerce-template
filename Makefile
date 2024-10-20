@@ -1,6 +1,6 @@
 include .env
 PROTO_PATH="./proto"
-DB_MIGRATION_PATH="./internal/app/infrastructure/database/migrations"
+DB_MIGRATION_PATH="./internal/app/infrastructure/postgres/migrations"
 
 # Makefile`
 .PHONY: all run docker-push docker-run linter create-migration goose-version migrate-up migrate-down test
@@ -53,7 +53,7 @@ generate-server:
 	@echo "Generating server code from OpenAPI specification..."
 	@oapi-codegen --generate=gin-server,strict-server,embedded-spec --package=api -o internal/api/server.gen.go internal/api/openapi.yaml
 	@oapi-codegen --generate=models --package=api -o internal/api/types.gen.go  internal/api/openapi.yaml
-	@go fmt github.com/igh9410/e-commerce-api/backend/internal/api
+	@go fmt ./internal/api
 
 # Generate client code from OpenAPI specification
 generate-client:
@@ -64,6 +64,6 @@ generate-client:
 # Generate SQLC code 
 sqlc-generate:
 	@echo "Generating SQLC code..."
-	@sqlc generate -f internal/pkg/sqlc/sqlc.yaml
+	@sqlc generate -f internal/app/infrastructure/postgres/sqlc.yaml
 
 	

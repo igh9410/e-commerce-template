@@ -1,6 +1,5 @@
 package postgres
 
-/*
 import (
 	"context"
 	"fmt"
@@ -9,6 +8,7 @@ import (
 
 	"os"
 
+	"github.com/igh9410/e-commerce-template/internal/app/infrastructure/postgres/sqlc"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -67,4 +67,4 @@ func (d *Database) Close() error {
 // GetDB returns the underlying *pgxpool.Pool instance for advanced database operations.
 func (d *Database) GetDB() *pgxpool.Pool {
 	return d.Pool
-} */
+}

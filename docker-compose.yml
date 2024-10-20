@@ -1,0 +1,15 @@
+services:
+  postgres: # Postgres Container
+    image: postgres:17.0-alpine
+    container_name: e-commerce-api-postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - e-commerce-api
+    environment:
+      POSTGRES_USERNAME: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+networks:
+  e-commerce-api:
+    driver: bridge

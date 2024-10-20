@@ -1,12 +1,12 @@
 version: "2"
 sql:
 - engine: "postgresql"
-  queries: "query.sql" # This is relative to `internal/pkg/sqlc`
+  queries: "./sqlc/queries.sql"
   schema: "./migrations"
   gen:
     go:
       package: "sqlc"
-      out: "."
+      out: "./sqlc"
       sql_package: "pgx/v5"
       emit_json_tags: true
       emit_prepared_queries: true

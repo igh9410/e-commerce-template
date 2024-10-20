@@ -1,21 +1,19 @@
 package server
 
-/*
 import (
-	"github.com/igh9410/e-commerce-template/backend/internal/api"
-	"github.com/igh9410/e-commerce-template/backend/internal/app/application/service"
+	"github.com/igh9410/e-commerce-template/internal/api"
+	"github.com/igh9410/e-commerce-template/internal/app/application/service"
 )
 
 // API implements the api.StrictServerInterface
 var _ api.StrictServerInterface = (*API)(nil)
 
 type API struct {
-	chatSerivce service.ChatService
+	productService service.ProductService
 }
 
-func NewAPI(chatService service.ChatService) api.StrictServerInterface {
-
+func NewAPI(productService service.ProductService) api.StrictServerInterface {
 	return &API{
-		chatSerivce: chatService,
+		productService: productService,
 	}
-} */
+}
