@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -160,4 +161,80 @@ func PgtypeTimestamptzToTimeOrNull(t pgtype.Timestamptz) *time.Time {
 		return nil
 	}
 	return &t.Time
+}
+
+// StringToInt64 converts a string to int64, returning 0 on error
+func StringToInt64(s string) int64 {
+	value, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		return 0 // Return default value if conversion fails
+	}
+	return value
+}
+
+// StringToInt32 converts a string to int32, returning 0 on error
+func StringToInt32(s string) int32 {
+	value, err := strconv.ParseInt(s, 10, 32)
+	if err != nil {
+		return 0 // Return default value if conversion fails
+	}
+	return int32(value)
+}
+
+// StringToFloat64 converts a string to float64, returning 0.0 on error
+func StringToFloat64(s string) float64 {
+	value, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		return 0.0 // Return default value if conversion fails
+	}
+	return value
+}
+
+// StringToFloat32 converts a string to float32, returning 0.0 on error
+func StringToFloat32(s string) float32 {
+	value, err := strconv.ParseFloat(s, 32)
+	if err != nil {
+		return 0.0 // Return default value if conversion fails
+	}
+	return float32(value)
+}
+
+// StringToBool converts a string to a bool, returning false on error
+func StringToBool(s string) bool {
+	value, err := strconv.ParseBool(s)
+	if err != nil {
+		return false // Return default value if conversion fails
+	}
+	return value
+}
+
+// StringToTime converts a string to time.Time, returning time.Time{} on error
+func StringToTime(s, layout string) time.Time {
+	// Default to RFC3339 if no layout is provided
+	if layout == "" {
+		layout = time.RFC3339
+	}
+	value, err := time.Parse(layout, s)
+	if err != nil {
+		return time.Time{} // Return default zero time value if conversion fails
+	}
+	return value
+}
+
+// StringToUint64 converts a string to uint64, returning 0 on error
+func StringToUint64(s string) uint64 {
+	value, err := strconv.ParseUint(s, 10, 64)
+	if err != nil {
+		return 0 // Return default value if conversion fails
+	}
+	return value
+}
+
+// StringToUint32 converts a string to uint32, returning 0 on error
+func StringToUint32(s string) uint32 {
+	value, err := strconv.ParseUint(s, 10, 32)
+	if err != nil {
+		return 0 // Return default value if conversion fails
+	}
+	return uint32(value)
 }

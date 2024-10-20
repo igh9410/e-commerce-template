@@ -27,6 +27,7 @@ type CreateProductRequest struct {
 	Name        string                      `json:"name"`
 	Price       string                      `json:"price"`
 	Status      *CreateProductRequestStatus `json:"status,omitempty"`
+	Tags        *[]string                   `json:"tags,omitempty"`
 }
 
 // CreateProductRequestStatus defines model for CreateProductRequest.Status.
@@ -52,6 +53,7 @@ type Product struct {
 	Name        *string        `json:"name,omitempty"`
 	Price       *string        `json:"price,omitempty"`
 	Status      *ProductStatus `json:"status,omitempty"`
+	Tags        *[]string      `json:"tags,omitempty"`
 }
 
 // ProductStatus defines model for Product.Status.

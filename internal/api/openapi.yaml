@@ -57,6 +57,10 @@ components:
                         - INACTIVE
                     type: string
                     format: enum
+                tags:
+                    type: array
+                    items:
+                        type: string
             description: Request message for creating a product
         CreateProductResponse:
             type: object
@@ -91,6 +95,10 @@ components:
                         - INACTIVE
                     type: string
                     format: enum
+                tags:
+                    type: array
+                    items:
+                        type: string
         Status:
             type: object
             properties:

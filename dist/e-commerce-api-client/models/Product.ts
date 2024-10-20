@@ -9,6 +9,7 @@ export type Product = {
     category?: string;
     price?: string;
     status?: Product.status;
+    tags?: Array<string>;
 };
 export namespace Product {
     export enum status {
