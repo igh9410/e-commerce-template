@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"github.com/google/uuid"
 	"github.com/igh9410/e-commerce-template/internal/app/domain/product"
 	"github.com/igh9410/e-commerce-template/internal/app/infrastructure/postgres/sqlc"
 	"github.com/igh9410/e-commerce-template/internal/utils"
@@ -10,7 +9,6 @@ import (
 // EntityToSQLCProduct converts a domain Product to an SQLC Product model.
 func ProductEntityToModel(p *product.Product) sqlc.Product {
 	return sqlc.Product{
-		ID:          uuid.MustParse(p.ID), // Convert string to UUID
 		Name:        p.Name,
 		Description: utils.StringToPgtypeOrNull(p.Description),
 		Category:    utils.StringToPgtypeOrNull(p.Category),

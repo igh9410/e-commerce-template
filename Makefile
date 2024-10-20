@@ -60,8 +60,6 @@ generate-server:
 generate-client:
 	@echo "Generating client code from OpenAPI specification..."
 	@npx openapi-typescript-codegen -i internal/api/openapi.yaml -o dist/e-commerce-api-client --name ECommerceClient --client fetch 
-		
-
 
 # Generate SQLC code 
 sqlc-generate:
