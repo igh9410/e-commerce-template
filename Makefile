@@ -5,7 +5,8 @@ DB_MIGRATION_PATH="./internal/app/infrastructure/postgres/migrations"
 # Makefile`
 .PHONY: all run docker-push docker-run linter create-migration goose-version migrate-up migrate-down test
 
-all: generate-docs generate-server 
+all: generate-docs generate-server generate-client sqlc-generate
+
 # Run the application
 run:
 	@echo "Running the application..."
@@ -57,7 +58,8 @@ generate-server:
 
 # Generate client code from OpenAPI specification
 generate-client:
-		npx openapi-typescript-codegen -i internal/api/openapi.yaml -o dist/e-commerce-api-client --name ECommerceClient --client fetch 
+	@echo "Generating client code from OpenAPI specification..."
+	@npx openapi-typescript-codegen -i internal/api/openapi.yaml -o dist/e-commerce-api-client --name ECommerceClient --client fetch 
 		
 
 
