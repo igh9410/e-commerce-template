@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -20,21 +19,30 @@ import (
 	repo "github.com/igh9410/e-commerce-template/internal/app/infrastructure/repository"
 	"github.com/igh9410/e-commerce-template/internal/docs"
 	"github.com/joho/godotenv"
+	"go.uber.org/zap"
 )
 
 func main() {
+	// Create a new zap logger
+	logger, _ := zap.NewProduction()
+	defer logger.Sync() // flushes buffer, if any
+
+	sugar := logger.Sugar()
+
 	if err := godotenv.Load(".env"); err != nil { // Running in local, must be run on go run . in ./cmd directory
-		slog.Info("No .env file found. Using OS environment variables.")
+		sugar.Info("No .env file found. Using OS environment variables.")
 	}
 
 	dbConn, err := db.NewDatabase()
 
 	if err != nil {
-		log.Fatalf("Could not initialize database connection: %s", err)
+		sugar.Fatalf("Could not initialize database connection: %s", err)
 	}
 
 	r := gin.Default()
 
+	// Use the zap logger middleware for structured logging
+	r.Use(middleware.GinZapLogger(logger), gin.Recovery())
 	// CORS configuration
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"http://localhost:3000", "http://127.0.0.1:5500"}
@@ -91,10 +99,11 @@ func main() {
 		}
 	}()
 
-	log.Println("Server listening on http://localhost:8080")
+	sugar.Info("Server listening on http://localhost:8080")
 
 	// Wait for interrupt signal to gracefully shutdown the server with
 	// a timeout of 3 seconds.
+
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
@@ -104,10 +113,10 @@ func main() {
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server Shutdown:", err)
+		sugar.Fatal("Server Shutdown:", err)
 	}
 
 	<-ctx.Done()
-	log.Println("Server exiting")
+	sugar.Info("Server exiting")
 
 }
