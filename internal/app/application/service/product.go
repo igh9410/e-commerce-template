@@ -1,17 +1,25 @@
 package service
 
-import "context"
+import (
+	"context"
+
+	"github.com/igh9410/e-commerce-template/internal/app/domain/product"
+)
 
 type ProductService interface {
 	CreateProduct(ctx context.Context) error
 }
 
-type productService struct{}
+type productService struct {
+	productRepo product.Repository
+}
 
 func (s *productService) CreateProduct(ctx context.Context) error {
 	return nil
 }
 
-func NewProductService() ProductService {
-	return &productService{}
+func NewProductService(productRepo product.Repository) ProductService {
+	return &productService{
+		productRepo: productRepo,
+	}
 }

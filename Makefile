@@ -68,4 +68,19 @@ sqlc-generate:
 	@echo "Generating SQLC code..."
 	@sqlc generate -f internal/app/infrastructure/postgres/sqlc.yaml
 
+
+# Generate OpenAPI documentation from gRPC proto files using gRPC-Gateway
+generate-docs-grpc:
+	@echo "Generating OpenAPI documentation from proto files..."
+	@protoc -I=${PROTO_PATH} -I=proto/third_party --openapiv2_out=internal/api --openapiv2_opt=allow_merge=true,merge_file_name=api ${PROTO_PATH}/*.proto
+
+# Generate gRPC server code from proto files
+generate-server-grpc:
+	@echo "Generating gRPC server code..."
+	@protoc --proto_path=${PROTO_PATH} -I=proto/third_party \
+	--go_out=. --go-grpc_out=. \
+	--grpc-gateway_out=. --grpc-gateway_opt=logtostderr=true \
+	--openapiv2_out=./internal/api --openapiv2_opt=allow_merge=true,merge_file_name=api,logtostderr=true \
+	${PROTO_PATH}/*.proto
+
 	
