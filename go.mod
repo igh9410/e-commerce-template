@@ -1,6 +1,6 @@
 module github.com/igh9410/e-commerce-template
 
-go 1.22.0
+go 1.23.3
 
 require (
 	github.com/gin-gonic/gin v1.10.0
