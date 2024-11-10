@@ -12,6 +12,7 @@ export type CreateProductRequest = {
     price: string;
     status?: CreateProductRequest.status;
     tags?: Array<string>;
+    sex?: string;
 };
 export namespace CreateProductRequest {
     export enum status {

@@ -23,34 +23,34 @@ enum ProductStockStatus {
 
 // Product message with tags as repeated field
 message Product {
-    string id = 1;
-    string name = 2;
-    string description = 3;
-    string category = 4; // category is digital, physical, or service
-    int64 price = 5;
-    ProductStatus status = 6;
-    repeated string tags = 7; // Add tags as repeated field
-    // Other fields...
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string category = 4; // category is digital, physical, or service
+  int64 price = 5;
+  ProductStatus status = 6;
+  repeated string tags = 7; // Add tags as repeated field
+  // Other fields...
 }
 
 message ProductStock {
-    int32 id = 1;
-    string product_id = 2;
-    string location = 3;
-    ProductStockStatus status = 4;
+  int32 id = 1;
+  string product_id = 2;
+  string location = 3;
+  ProductStockStatus status = 4;
 }
 
 
 // Service definition for ProductService
 service ProductService {
-  // POST /api/v1/products
-  rpc CreateProduct (CreateProductRequest) returns (CreateProductResponse) {
-      option (google.api.http) = {
-          post: "/api/v1/products"
-          body: "*"
-          response_body: "product"
-      };
-  }
+// POST /api/v1/products
+rpc CreateProduct (CreateProductRequest) returns (CreateProductResponse) {
+    option (google.api.http) = {
+        post: "/api/v1/products"
+        body: "*"
+        response_body: "product"
+    };
+}
 }
 
 // Request message for creating a product
@@ -61,9 +61,10 @@ message CreateProductRequest {
   int64 price = 4 [(google.api.field_behavior) = REQUIRED];
   ProductStatus status = 5;
   repeated string tags = 6; // Add tags as repeated field
+  string sex = 7;
 }
 
 // Response message for creating a product
 message CreateProductResponse {
-  Product product = 1;
+Product product = 1;
 }

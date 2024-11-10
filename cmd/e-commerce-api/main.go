@@ -79,20 +79,21 @@ func main() {
 	// Set up Gin for serving Swagger UI and additional routes
 	r := gin.Default()
 
-	// Serve the Swagger UI files
+	// Serve the Swagger UI files first
 	swagger, err := api.GetSwagger()
 	if err != nil {
-		panic(err)
+		sugar.Fatalf("Failed to get Swagger spec: %v", err)
 	}
 	swagger.Servers = nil
 	docs.UseSwagger(r, swagger)
 
+	// Register gRPC-Gateway as a route in Gin
+	r.Any("/api/v1/*any", gin.WrapH(mux))
+
+	// Add a home endpoint
 	r.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Welcome Gin Server")
 	})
-
-	// Register gRPC-Gateway as a route in Gin
-	r.Any("/api/v1/*any", gin.WrapH(mux))
 
 	// Start HTTP server (Gin)
 	httpServer := &http.Server{

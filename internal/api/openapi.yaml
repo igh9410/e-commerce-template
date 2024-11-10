@@ -61,6 +61,8 @@ components:
                     type: array
                     items:
                         type: string
+                sex:
+                    type: string
             description: Request message for creating a product
         CreateProductResponse:
             type: object
