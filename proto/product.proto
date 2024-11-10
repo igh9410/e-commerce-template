@@ -21,11 +21,12 @@ enum ProductStockStatus {
     SOLD = 2;
 }
 
+// Product message with tags as repeated field
 message Product {
     string id = 1;
     string name = 2;
     string description = 3;
-    string category = 4;
+    string category = 4; // category is digital, physical, or service
     int64 price = 5;
     ProductStatus status = 6;
     repeated string tags = 7; // Add tags as repeated field

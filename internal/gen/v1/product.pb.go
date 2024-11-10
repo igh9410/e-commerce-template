@@ -119,6 +119,7 @@ func (ProductStockStatus) EnumDescriptor() ([]byte, []int) {
 	return file_product_proto_rawDescGZIP(), []int{1}
 }
 
+// Product message with tags as repeated field
 type Product struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -127,7 +128,7 @@ type Product struct {
 	Id          string        `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name        string        `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	Description string        `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	Category    string        `protobuf:"bytes,4,opt,name=category,proto3" json:"category,omitempty"`
+	Category    string        `protobuf:"bytes,4,opt,name=category,proto3" json:"category,omitempty"` // category is digital, physical, or service
 	Price       int64         `protobuf:"varint,5,opt,name=price,proto3" json:"price,omitempty"`
 	Status      ProductStatus `protobuf:"varint,6,opt,name=status,proto3,enum=com.ecommerce.api.v1.ProductStatus" json:"status,omitempty"`
 	Tags        []string      `protobuf:"bytes,7,rep,name=tags,proto3" json:"tags,omitempty"` // Add tags as repeated field
