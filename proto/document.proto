@@ -4,7 +4,7 @@ package com.ecommerce.api.v1;
 
 import "openapiv3/annotations.proto";
 
-option go_package = "github.com/igh9410/e-commerce-template/backend/internal/api/v1;api";
+option go_package = "internal/gen/v1;gen";
 
 option (openapi.v3.document) = {
   info: {

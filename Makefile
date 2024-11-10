@@ -5,7 +5,7 @@ DB_MIGRATION_PATH="./internal/app/infrastructure/postgres/migrations"
 # Makefile`
 .PHONY: all run docker-push docker-run linter create-migration goose-version migrate-up migrate-down test
 
-all: generate-docs generate-server generate-client sqlc-generate
+all: generate-docs generate-server generate-grpc generate-client sqlc-generate
 
 # Run the application
 run:
@@ -55,6 +55,15 @@ generate-server:
 	@oapi-codegen --generate=gin-server,strict-server,embedded-spec --package=api -o internal/api/server.gen.go internal/api/openapi.yaml
 	@oapi-codegen --generate=models --package=api -o internal/api/types.gen.go  internal/api/openapi.yaml
 	@go fmt ./internal/api
+
+generate-grpc:
+	@echo "Generating gRPC and gRPC-Gateway code..."
+	@protoc --proto_path=${PROTO_PATH} -I=proto/third_party \
+		--go_out=. \
+		--go-grpc_out=. \
+		--grpc-gateway_out=. \
+		--grpc-gateway_opt=logtostderr=true \
+		${PROTO_PATH}/*.proto
 
 # Generate client code from OpenAPI specification
 generate-client:

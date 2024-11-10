@@ -5,7 +5,8 @@ import "google/protobuf/timestamp.proto";
 import "google/api/field_behavior.proto";
 import "google/api/annotations.proto";
 
-option go_package = "internal/a";
+// Updated go_package to use a relative directory within internal/gen
+option go_package = "internal/gen/v1;gen";
 
 enum ProductStatus {
     // ACTIVE means the product is available for purchase
