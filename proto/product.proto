@@ -66,5 +66,5 @@ message CreateProductRequest {
 
 // Response message for creating a product
 message CreateProductResponse {
-Product product = 1;
+  Product product = 1;
 }
