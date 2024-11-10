@@ -24,21 +24,15 @@ func NewDatabase() (*Database, error) {
 	var username string
 	var password string
 	var host string
-	var connectionString string
 
-	if os.Getenv("IS_PRODUCTION") == "YES" || os.Getenv("IS_TEST") == "YES" { // Production Environment or Test Environment
-		connectionString = os.Getenv("DATABASE_URL")
-	} else {
-		username = os.Getenv("POSTGRES_USERNAME")
-		password = os.Getenv("POSTGRES_PASSWORD")
-		host = os.Getenv("POSTGRES_HOST") // Running in local Docker container
+	username = os.Getenv("POSTGRES_USERNAME")
+	password = os.Getenv("POSTGRES_PASSWORD")
+	host = os.Getenv("POSTGRES_HOST") // Running in local Docker container
 
-		if host == "" { // Running in local environment
-			host = "localhost"
-		}
-
-		connectionString = fmt.Sprintf("postgresql://%s:%s@%s:5432/postgres?sslmode=disable", username, password, host)
+	if host == "" { // Running in local environment
+		host = "localhost"
 	}
+	connectionString := fmt.Sprintf("postgresql://%s:%s@%s:5432/postgres?sslmode=disable", username, password, host)
 
 	// Connect to the database
 	ctx := context.Background()
@@ -46,6 +40,12 @@ func NewDatabase() (*Database, error) {
 	pool, err := pgxpool.New(ctx, connectionString)
 	if err != nil {
 		log.Fatalf("Unable to connect to database: %v", err)
+		return nil, err
+	}
+
+	// Ping the database to ensure the connection is established
+	if err := pool.Ping(ctx); err != nil {
+		log.Fatalf("Unable to ping the database: %v", err)
 		return nil, err
 	}
 

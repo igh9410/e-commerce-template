@@ -2,24 +2,26 @@ package main
 
 import (
 	"context"
-	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/igh9410/e-commerce-template/internal/api"
-	"github.com/igh9410/e-commerce-template/internal/api/middleware"
 	server "github.com/igh9410/e-commerce-template/internal/app/application/server"
 	"github.com/igh9410/e-commerce-template/internal/app/application/service"
-	db "github.com/igh9410/e-commerce-template/internal/app/infrastructure/postgres"
+	"github.com/igh9410/e-commerce-template/internal/app/infrastructure/postgres"
 	repo "github.com/igh9410/e-commerce-template/internal/app/infrastructure/repository"
 	"github.com/igh9410/e-commerce-template/internal/docs"
+	pb "github.com/igh9410/e-commerce-template/internal/gen/v1"
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
@@ -29,94 +31,95 @@ func main() {
 
 	sugar := logger.Sugar()
 
-	if err := godotenv.Load(".env"); err != nil { // Running in local, must be run on go run . in ./cmd directory
+	// Load environment variables
+	if err := godotenv.Load(".env"); err != nil {
 		sugar.Info("No .env file found. Using OS environment variables.")
 	}
 
-	dbConn, err := db.NewDatabase()
-
+	// Initialize database connection
+	dbConn, err := postgres.NewDatabase()
 	if err != nil {
 		sugar.Fatalf("Could not initialize database connection: %s", err)
 	}
 
+	productRepo := repo.NewProductRepository(dbConn)
+
+	productService := service.NewProductService(productRepo)
+	grpcServer := grpc.NewServer()
+
+	// Register gRPC server
+	pb.RegisterProductServiceServer(grpcServer, server.NewAPI(productService))
+
+	// Start gRPC server in a separate goroutine
+	go func() {
+		listener, err := net.Listen("tcp", ":50051")
+		if err != nil {
+			sugar.Fatalf("Failed to listen: %v", err)
+		}
+		sugar.Info("Starting gRPC server on :50051")
+		if err := grpcServer.Serve(listener); err != nil {
+			sugar.Fatalf("Failed to serve gRPC: %v", err)
+		}
+	}()
+
+	// Set up gRPC-Gateway
+	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	mux := runtime.NewServeMux()
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+
+	// Register gRPC-Gateway endpoints
+	err = pb.RegisterProductServiceHandlerFromEndpoint(ctx, mux, ":50051", opts)
+	if err != nil {
+		sugar.Fatalf("Failed to register gRPC-Gateway: %v", err)
+	}
+
+	// Set up Gin for serving Swagger UI and additional routes
 	r := gin.Default()
 
-	// Use the zap logger middleware for structured logging
-	r.Use(middleware.GinZapLogger(logger), gin.Recovery())
-	// CORS configuration
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:3000", "http://127.0.0.1:5500"}
-	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE"}
-	config.AllowHeaders = []string{"Content-Type", "Authorization"}
-	config.AllowCredentials = true
-	r.Use(cors.New(config))
-
+	// Serve the Swagger UI files
 	swagger, err := api.GetSwagger()
 	if err != nil {
 		panic(err)
 	}
-
-	// Allow all origins for swagger UI
 	swagger.Servers = nil
-
-	// Serve the Swagger UI files
 	docs.UseSwagger(r, swagger)
 
 	r.GET("/", func(c *gin.Context) {
-		//time.Sleep(5 * time.Second)
 		c.String(http.StatusOK, "Welcome Gin Server")
 	})
 
-	// This route is always accessible.
-	r.GET("/api/public", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "Hello from a public endpoint! You don't need to be authenticated to see this."})
-	})
+	// Register gRPC-Gateway as a route in Gin
+	r.Any("/api/v1/*any", gin.WrapH(mux))
 
-	// This route is only accessible if the user has a valid access_token.
-	r.GET("/api/private", middleware.EnsureValidToken(), func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "Hello from a private endpoint! You need to be authenticated to see this."})
-	})
-
-	productRepo := repo.NewProductRepository(dbConn)
-
-	productService := service.NewProductService(productRepo)
-
-	// Create an instance of your handler that implements api.ServerInterface
-	handler := api.NewStrictHandler(server.NewAPI(productService), nil)
-
-	// Register the handlers with Gin
-	api.RegisterHandlers(r, handler)
-
-	srv := &http.Server{
+	// Start HTTP server (Gin)
+	httpServer := &http.Server{
 		Addr:    ":8080",
 		Handler: r,
 	}
 
 	go func() {
-		// service connections
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
+		sugar.Info("Starting HTTP server on :8080")
+		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			sugar.Fatalf("Failed to serve HTTP: %v", err)
 		}
 	}()
 
-	sugar.Info("Server listening on http://localhost:8080")
-
-	// Wait for interrupt signal to gracefully shutdown the server with
-	// a timeout of 3 seconds.
-
+	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 3 seconds.
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Println("Shutting down server...")
+	sugar.Info("Shutting down server...")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
+	ctxShutdown, cancelShutdown := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancelShutdown()
 
-	if err := srv.Shutdown(ctx); err != nil {
-		sugar.Fatal("Server Shutdown:", err)
+	if err := httpServer.Shutdown(ctxShutdown); err != nil {
+		sugar.Fatal("HTTP Server Shutdown:", err)
 	}
 
-	<-ctx.Done()
+	grpcServer.GracefulStop()
 	sugar.Info("Server exiting")
-
 }

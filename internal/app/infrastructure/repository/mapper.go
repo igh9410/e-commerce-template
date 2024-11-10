@@ -3,7 +3,7 @@ package repository
 import (
 	"github.com/igh9410/e-commerce-template/internal/app/domain/product"
 	"github.com/igh9410/e-commerce-template/internal/app/infrastructure/postgres/sqlc"
-	"github.com/igh9410/e-commerce-template/internal/utils"
+	"github.com/igh9410/e-commerce-template/pkg/utils"
 )
 
 // EntityToSQLCProduct converts a domain Product to an SQLC Product model.
