@@ -1,0 +1,18 @@
+syntax = "proto3";
+package com.ecommerce.api.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/api/field_behavior.proto";
+import "google/api/annotations.proto";
+
+// Updated go_package to use a relative directory within internal/gen
+option go_package = "internal/gen/v1;gen";
+
+
+// Product message with tags as repeated field
+message Order {
+  int32 id = 1;
+    string product_id = 2;
+}
+
+

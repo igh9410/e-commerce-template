@@ -2,6 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+/**
+ * Product message with tags as repeated field
+ */
 export type Product = {
     id?: string;
     name?: string;
