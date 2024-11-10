@@ -99,6 +99,7 @@ components:
                     type: array
                     items:
                         type: string
+            description: Product message with tags as repeated field
         Status:
             type: object
             properties:

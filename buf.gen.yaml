@@ -1,0 +1,9 @@
+# buf.gen.yaml
+version: v1
+plugins:
+- name: go
+  out: internal/gen # Directory for gRPC code generation
+  opt: paths=source_relative
+- name: go-grpc
+  out: internal/gen
+  opt: paths=source_relative

@@ -49,12 +49,14 @@ generate-docs:
 	@echo "Generating OpenAPI documentation..."
 	@protoc --proto_path=${PROTO_PATH} -I=proto/third_party --openapi_out=internal/api --openapi_opt=enum_type=string ${PROTO_PATH}/*.proto
 	
-# Generate server code from OpenAPI specification
 generate-server:
-	@echo "Generating server code from OpenAPI specification..."
-	@oapi-codegen --generate=gin-server,strict-server,embedded-spec --package=api -o internal/api/server.gen.go internal/api/openapi.yaml
-	@oapi-codegen --generate=models --package=api -o internal/api/types.gen.go  internal/api/openapi.yaml
-	@go fmt ./internal/api
+	@echo "Generating gRPC and gRPC-Gateway code..."
+	@protoc --proto_path=${PROTO_PATH} -I=proto/third_party \
+		--go_out=. \
+		--go-grpc_out=. \
+		--grpc-gateway_out=. \
+		--grpc-gateway_opt=logtostderr=true \
+		${PROTO_PATH}/*.proto
 
 # Generate client code from OpenAPI specification
 generate-client:
@@ -69,18 +71,3 @@ sqlc-generate:
 	@sqlc generate -f internal/app/infrastructure/postgres/sqlc.yaml
 
 
-# Generate OpenAPI documentation from gRPC proto files using gRPC-Gateway
-generate-docs-grpc:
-	@echo "Generating OpenAPI documentation from proto files..."
-	@protoc -I=${PROTO_PATH} -I=proto/third_party --openapiv2_out=internal/api --openapiv2_opt=allow_merge=true,merge_file_name=api ${PROTO_PATH}/*.proto
-
-# Generate gRPC server code from proto files
-generate-server-grpc:
-	@echo "Generating gRPC server code..."
-	@protoc --proto_path=${PROTO_PATH} -I=proto/third_party \
-	--go_out=. --go-grpc_out=. \
-	--grpc-gateway_out=. --grpc-gateway_opt=logtostderr=true \
-	--openapiv2_out=./internal/api --openapiv2_opt=allow_merge=true,merge_file_name=api,logtostderr=true \
-	${PROTO_PATH}/*.proto
-
-	
