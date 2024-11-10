@@ -11,7 +11,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/igh9410/e-commerce-template/internal/api"
 	server "github.com/igh9410/e-commerce-template/internal/app/application/server"
 	"github.com/igh9410/e-commerce-template/internal/app/application/service"
 	"github.com/igh9410/e-commerce-template/internal/app/infrastructure/postgres"
@@ -79,13 +78,8 @@ func main() {
 	// Set up Gin for serving Swagger UI and additional routes
 	r := gin.Default()
 
-	// Serve the Swagger UI files first
-	swagger, err := api.GetSwagger()
-	if err != nil {
-		sugar.Fatalf("Failed to get Swagger spec: %v", err)
-	}
-	swagger.Servers = nil
-	docs.UseSwagger(r, swagger)
+	// Use Swagger with the combined function
+	docs.UseSwagger(r)
 
 	// Register gRPC-Gateway as a route in Gin
 	r.Any("/api/v1/*any", gin.WrapH(mux))

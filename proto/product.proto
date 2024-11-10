@@ -61,7 +61,6 @@ message CreateProductRequest {
   int64 price = 4 [(google.api.field_behavior) = REQUIRED];
   ProductStatus status = 5;
   repeated string tags = 6; // Add tags as repeated field
-  string sex = 7;
 }
 
 // Response message for creating a product
