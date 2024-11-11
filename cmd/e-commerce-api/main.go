@@ -16,7 +16,7 @@ import (
 	"github.com/igh9410/e-commerce-template/internal/app/infrastructure/postgres"
 	repo "github.com/igh9410/e-commerce-template/internal/app/infrastructure/repository"
 	"github.com/igh9410/e-commerce-template/internal/docs"
-	pb "github.com/igh9410/e-commerce-template/internal/gen/v1"
+	pb "github.com/igh9410/e-commerce-template/internal/pb/v1"
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"

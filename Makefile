@@ -61,7 +61,7 @@ generate-server:
 # Generate client code from OpenAPI specification
 generate-client:
 	@echo "Generating client code from OpenAPI specification..."
-	@npx openapi-typescript-codegen -i internal/api/openapi.yaml -o dist/e-commerce-api-client --name ECommerceClient --client fetch 
+	@npx openapi-typescript-codegen -i internal/api/openapi.yaml -o packages/e-commerce-api-client --name ECommerceClient --client fetch 
 		
 
 

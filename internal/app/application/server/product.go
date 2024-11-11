@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/igh9410/e-commerce-template/internal/app/domain/product"
-	pb "github.com/igh9410/e-commerce-template/internal/gen/v1"
+	pb "github.com/igh9410/e-commerce-template/internal/pb/v1"
 	"github.com/igh9410/e-commerce-template/internal/utils"
 )
 

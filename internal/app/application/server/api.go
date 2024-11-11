@@ -2,7 +2,7 @@ package server
 
 import (
 	"github.com/igh9410/e-commerce-template/internal/app/application/service"
-	pb "github.com/igh9410/e-commerce-template/internal/gen/v1"
+	pb "github.com/igh9410/e-commerce-template/internal/pb/v1"
 )
 
 // API implements pb.ProductServiceServer
