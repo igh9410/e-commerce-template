@@ -3,12 +3,11 @@ package postgres
 import (
 	"context"
 	"fmt"
-	"log"
-	"log/slog"
 
 	"os"
 
 	"github.com/igh9410/e-commerce-template/internal/app/infrastructure/postgres/sqlc"
+	"github.com/igh9410/e-commerce-template/internal/pkg/logger"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -19,6 +18,7 @@ type Database struct {
 
 func NewDatabase() (*Database, error) {
 
+	sugar := logger.GetSugaredLogger()
 	// Create the connection string using the retrieved values
 	// Retrieve the values from environment variables
 	var username string
@@ -39,17 +39,17 @@ func NewDatabase() (*Database, error) {
 
 	pool, err := pgxpool.New(ctx, connectionString)
 	if err != nil {
-		log.Fatalf("Unable to connect to database: %v", err)
+		sugar.Fatalf("Unable to connect to database: %v", err)
 		return nil, err
 	}
 
 	// Ping the database to ensure the connection is established
 	if err := pool.Ping(ctx); err != nil {
-		log.Fatalf("Unable to ping the database: %v", err)
+		sugar.Fatalf("Unable to ping the database: %v", err)
 		return nil, err
 	}
 
-	slog.Info("Database initialized")
+	sugar.Info("Database initialized")
 
 	querier := sqlc.New(pool)
 

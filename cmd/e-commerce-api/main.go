@@ -17,17 +17,16 @@ import (
 	"github.com/igh9410/e-commerce-template/internal/app/infrastructure/postgres"
 	repo "github.com/igh9410/e-commerce-template/internal/app/infrastructure/repository"
 	"github.com/igh9410/e-commerce-template/internal/docs"
+	logger "github.com/igh9410/e-commerce-template/internal/pkg/logger"
 	"github.com/joho/godotenv"
-	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	// Create a new zap logger
-	logger, _ := zap.NewProduction()
+
 	defer logger.Sync() // flushes buffer, if any
 
-	sugar := logger.Sugar()
+	sugar := logger.GetSugaredLogger()
 
 	// Load environment variables
 	if err := godotenv.Load(".env"); err != nil {
@@ -68,7 +67,7 @@ func main() {
 	// Set up Gin for serving Swagger UI and additional routes
 	r := gin.Default()
 	// Use GinZapLogger middleware with zap logger
-	r.Use(middleware.GinZapLogger(logger))
+	r.Use(middleware.GinZapLogger(logger.GetLogger()))
 
 	// Use Swagger with the combined function
 	docs.UseSwagger(r)
