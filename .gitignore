@@ -23,3 +23,44 @@ go.work.sum
 
 # env file
 .env
+
+# Node dependencies
+**/node_modules/
+.pnp.cjs
+.pnp.data.json
+.pnp.loader.mjs
+.pnp.*
+
+# Build artifacts
+dist/
+build/
+*.log
+*.gz
+
+# Remix specific
+.remix/
+
+# Yarn specific
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+.yarn/plugins/
+
+# Environment files
+.env
+.env.*.local
+
+# IDE specific
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+apps/e-commerce-frontend/node_modules/

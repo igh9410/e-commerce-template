@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/igh9410/e-commerce-template/internal/app/domain/product"
-	pb "github.com/igh9410/e-commerce-template/internal/gen/v1"
-	"github.com/igh9410/e-commerce-template/internal/utils"
+	pb "github.com/igh9410/e-commerce-template/internal/pb/v1"
+	"github.com/igh9410/e-commerce-template/pkg/utils"
 )
 
 func (a *API) CreateProduct(ctx context.Context, req *pb.CreateProductRequest) (*pb.CreateProductResponse, error) {
