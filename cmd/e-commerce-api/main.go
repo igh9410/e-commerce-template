@@ -11,24 +11,22 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/igh9410/e-commerce-template/internal/api/middleware"
 	server "github.com/igh9410/e-commerce-template/internal/app/application/server"
 	"github.com/igh9410/e-commerce-template/internal/app/application/service"
 	"github.com/igh9410/e-commerce-template/internal/app/infrastructure/postgres"
 	repo "github.com/igh9410/e-commerce-template/internal/app/infrastructure/repository"
 	"github.com/igh9410/e-commerce-template/internal/docs"
-	pb "github.com/igh9410/e-commerce-template/internal/gen/v1"
+	logger "github.com/igh9410/e-commerce-template/internal/pkg/logger"
 	"github.com/joho/godotenv"
-	"go.uber.org/zap"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
-	// Create a new zap logger
-	logger, _ := zap.NewProduction()
+
 	defer logger.Sync() // flushes buffer, if any
 
-	sugar := logger.Sugar()
+	sugar := logger.GetSugaredLogger()
 
 	// Load environment variables
 	if err := godotenv.Load(".env"); err != nil {
@@ -44,10 +42,9 @@ func main() {
 	productRepo := repo.NewProductRepository(dbConn)
 
 	productService := service.NewProductService(productRepo)
-	grpcServer := grpc.NewServer()
 
-	// Register gRPC server
-	pb.RegisterProductServiceServer(grpcServer, server.NewAPI(productService))
+	api := server.NewAPI(productService)
+	grpcServer := grpc.NewServer()
 
 	// Start gRPC server in a separate goroutine
 	go func() {
@@ -61,22 +58,16 @@ func main() {
 		}
 	}()
 
-	// Set up gRPC-Gateway
-	ctx := context.Background()
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
 	mux := runtime.NewServeMux()
-	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-
-	// Register gRPC-Gateway endpoints
-	err = pb.RegisterProductServiceHandlerFromEndpoint(ctx, mux, ":50051", opts)
-	if err != nil {
-		sugar.Fatalf("Failed to register gRPC-Gateway: %v", err)
+	// Register all services with one call
+	if err := server.RegisterAllServices(grpcServer, mux, api); err != nil {
+		panic(err)
 	}
 
 	// Set up Gin for serving Swagger UI and additional routes
 	r := gin.Default()
+	// Use GinZapLogger middleware with zap logger
+	r.Use(middleware.GinZapLogger(logger.GetLogger()))
 
 	// Use Swagger with the combined function
 	docs.UseSwagger(r)
